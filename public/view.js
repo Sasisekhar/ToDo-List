@@ -18,8 +18,8 @@
 
         // Vars.
             var $form = document.getElementById('saveForm');
-            var $submit = document.getElementById('save');
-            var $load = document.getElementById('load');
+            var $submit = document.getElementById('saveas');
+            var $list = document.getElementById('list');
             var $message, $loadGIF;
 
         // Bail if addEventListener isn't supported.
@@ -91,7 +91,7 @@
 
                 // AJAX Request.
                     var xhr = new XMLHttpRequest();
-                    xhr.open('POST', '/save', true);
+                    xhr.open('POST', '/saveas', true);
                     xhr.setRequestHeader('Content-Type', 'application/json');
 
                     xhr.onreadystatechange = function() {
@@ -135,7 +135,7 @@
 
             });
 
-    $load.addEventListener('click', function(event) {
+    $list.addEventListener('click', function(event) {
 
         event.stopPropagation();
         event.preventDefault();
@@ -144,11 +144,11 @@
             $message._hide('');
 
         // Disable submit.
-            $submit.disabled = true;
+            $list.disabled = true;
 
         // AJAX Request.
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/load', true);
+            xhr.open('POST', '/list', true);
             xhr.setRequestHeader('Content-Type', 'application/json');
 
             xhr.onreadystatechange = function() {
@@ -158,16 +158,14 @@
                     $form.reset();
 
                     // Enable submit.
-                    $submit.disabled = false;
+                    $list.disabled = false;
 
                     // Show message based on the response.
                     if (xhr.status === 200) {
                         // Hide message.
                         $message._hide('loading');
 
-                        $message._show('success', 'Thank you!');
-
-                        window.location.href;
+                        window.location.href = window.location.href;
                     } else {
                         // Hide message.
                         $message._hide('loading');
@@ -177,20 +175,8 @@
                 }
             };
 
-            var $name = document.getElementById('saveName');
-
-            if($name.value){
-                $message._showNoHide('loading', 'Loading');
-                xhr.send(JSON.stringify({ name: $name.value }));
-            } else {
-                // Reset form.
-                $form.reset();
-
-                // Enable submit.
-                $submit.disabled = false;
-                $message._show('failure', 'Invalid Input');
-
-            }
+            $message._showNoHide('loading', 'Loading');
+            xhr.send(JSON.stringify({ name: 'placeholder'}));
 
     });
 

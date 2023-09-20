@@ -109,6 +109,24 @@ div {
     text-decoration: none;
 }
 
+.listItem .load {
+    color : rgb(202, 202, 202);
+    cursor:pointer;
+    text-decoration: none;
+}
+
+.listItem .save {
+    color : rgb(202, 202, 202);
+    cursor:pointer;
+    text-decoration: none; 
+}
+
+.listItem .delete {
+    color : rgb(243, 96, 96);
+    cursor:pointer;
+    text-decoration: none;
+}
+
 form .message {
     text-decoration: none;
     -moz-transition: opacity 0.2s ease-in-out, -moz-transform 0.2s ease-in-out;

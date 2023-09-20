@@ -26,9 +26,10 @@ const client = new MongoClient(uri, {
 
 var task = [];
 var complete = [];
+var saved = [];
 
 app.get('/', function (req, res) {
-  res.render('index', { task: task, complete : complete });
+  res.render('index', { task: task, complete: complete, saved: saved });
 });
 
 app.post('/addtask', function (req, res) {
@@ -60,7 +61,7 @@ app.get("/reverttask", function(req, res) {
     res.redirect("/");
 });
 
-app.post('/save', function (req, res) {
+app.post('/saveas', function (req, res) {
 
     async function run() {
         // Connect the client to the server	(optional starting in v4.7)
@@ -76,21 +77,24 @@ app.post('/save', function (req, res) {
           record = await client.db(_DB).collection(_Collection).updateOne({name:req.body.name}, {$set: {incomplete:task, complete:complete}});
         }
         
-  
-        res.status(200)
-        res.end()
+        client.close();
+
+        res.status(200);
+        res.end();
       }
-      run()
+      run();
 });
 
 
-app.post('/load', function (req, res) {
+app.get('/load', function (req, res) {
+  var taskId = req.query.index;
+  var taskName = saved[taskId];
 
     async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
   
-        var record = await client.db(_DB).collection(_Collection).findOne({name:req.body.name}, {projection: {_id:1}});
+        var record = await client.db(_DB).collection(_Collection).findOne({name:taskName}, {projection: {incomplete:1, complete:1}});
 
         if(record == null) {
           console.log("Record doesn't exist");
@@ -98,13 +102,72 @@ app.post('/load', function (req, res) {
           res.end();
         } else {
           console.log("Record exists!");
-          record = await client.db(_DB).collection(_Collection).find({name:req.body.name}).toArray();
-          task = record[0].incomplete;
-          complete = record[0].complete;
+          task = record.incomplete;
+          complete = record.complete;
         }
+
+        client.close();
+
         res.redirect("/");
       }
       run();
+});
+
+app.get('/save', function (req, res) {
+  var taskId = req.query.index;
+  var taskName = saved[taskId];
+
+    async function run() {
+        // Connect the client to the server	(optional starting in v4.7)
+        await client.connect();
+
+        var record = await client.db(_DB).collection(_Collection).updateOne({name:taskName}, {$set: {incomplete:task, complete:complete}});
+
+        client.close();
+
+        res.redirect("/");
+      }
+      run();
+});
+
+app.get('/delete', function (req, res) {
+  var taskId = req.query.index;
+  var taskName = saved[taskId];
+
+    async function run() {
+        // Connect the client to the server	(optional starting in v4.7)
+        await client.connect();
+
+        var record = await client.db(_DB).collection(_Collection).deleteOne({name:taskName});
+
+        client.close();
+
+        res.redirect("/");
+      }
+      run();
+});
+
+app.post('/list', function (req, res) {
+
+  async function run() {
+      // Connect the client to the server	(optional starting in v4.7)
+      await client.connect();
+
+      var records = await client.db(_DB).collection(_Collection).find({}).toArray();
+
+      tempArr = [];
+
+      for(const i of records){
+        tempArr.push(i.name);
+      }
+
+      saved = tempArr;
+
+      client.close();
+
+      res.redirect("/");
+    }
+    run();
 });
 
 //the server is listening on port 3000 for connections

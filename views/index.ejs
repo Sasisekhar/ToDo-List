@@ -7,7 +7,7 @@
 </head>
 <body>
     <div class="container">
-        <h2> Sasi's ToDo List </h2>
+        <h2>To Do</h2>
         <div class="textBoxContainer">
             <form action="/" method="post" autocomplete="off">
                 <input class="textBox" type="text" name="newtask" placeholder="add new task">
@@ -47,9 +47,29 @@
         </div>
         <div>
             <form id="saveForm" action="/" autocomplete="off">
-                <input id="saveName" class="textBox" type="text" name="saveName" placeholder="List Name">
-                <button class="button" id="save" type=submit>Save</button>
-                <button class="button" id="load" type=submit>Load</button>
+                <div>
+                    <input id="saveName" class="textBox" type="text" name="saveName" placeholder="List Name">
+                    <button class="button" id="saveas" type=submit>Save As</button>
+                </div>
+                <div>
+                    <button class="button" id="list" type=submit>Refresh List</button>
+                    <ul class="todoList">
+                        <% for( var i = 0; i < saved.length; i++){ %>
+                            <li class="listItem">
+                                <span class="listItemName"> <%= saved[i] %> </span>
+                                <a href="/load?index=<%= i %>" class="load">
+                                    <span class="material-symbols-outlined">file_open</span>
+                                </a>
+                                <a href="/save?index=<%= i %>" class="save">
+                                    <span class="material-symbols-outlined">save</span>
+                                </a>
+                                <a href="/delete?index=<%= i %>" class="delete">
+                                    <span class="material-symbols-outlined">delete</span>
+                                </a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </div>
             </form>
         </div>
     </div>
