@@ -1,0 +1,154 @@
+body {
+    background-color: #292929;
+    font-family: 'Poppins';
+    text-align: center;
+    color: antiquewhite;
+}
+
+.button {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    -moz-transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+    -webkit-transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+    -ms-transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+    background-color: #111111;
+    border-radius: 100px;
+    border: 0;
+    color: #ffffff !important;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: 700;
+    height: 2.75em;
+    line-height: 2.75em;
+    padding: 0 1.125em;
+    text-align: center;
+    white-space: nowrap;
+    font-family: 'Poppins';
+}
+
+.textBox {
+    font-family: 'Poppins';
+    width: 18em;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    -moz-transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+    -webkit-transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+    -ms-transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+    border-radius: 100px;
+    font-weight: 700;
+    height: 2.75em;
+    padding: 0 1.1rem;
+    line-height: 2.75em;
+}
+
+.button:hover {
+    background-color: #ffffff;
+    color: #000000 !important;
+}
+
+.button:active {
+    background-color: #ffffff;
+    color: #000000 !important; 
+}
+
+.button:disabled {
+    opacity: 0.5; 
+}
+
+li {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 0.5em 0;
+    width: 100%;
+}
+
+.listContainer {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    justify-content: space-evenly;
+    flex-shrink: 10;
+}
+
+div {
+    padding: 10px;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.listItemName {
+    padding-right: 5px;
+}
+
+.listItem .complete {
+    color : rgb(96, 243, 143);
+    cursor:pointer;
+    text-decoration: none;
+}
+
+.listItem .remove {
+    color : rgb(243, 96, 96);
+    cursor:pointer;
+    text-decoration: none;
+}
+
+.listItem .revert {
+    color : rgb(96, 194, 243);
+    cursor:pointer;
+    text-decoration: none;
+}
+
+form .message {
+    text-decoration: none;
+    -moz-transition: opacity 0.2s ease-in-out, -moz-transform 0.2s ease-in-out;
+    -webkit-transition: opacity 0.2s ease-in-out, -webkit-transform 0.2s ease-in-out;
+    -ms-transition: opacity 0.2s ease-in-out, -ms-transform 0.2s ease-in-out;
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+    -moz-transform: scale(1.05);
+    -webkit-transform: scale(1.05);
+    -ms-transform: scale(1.05);
+    transform: scale(1.05);
+    /* height: 2.75em; */
+    line-height: 2.75em;
+    opacity: 0; 
+}
+.page-child.hide {
+    opacity: 0;
+}
+
+form .message.visible {
+    -moz-transform: scale(1);
+    -webkit-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+    opacity: 1; 
+}
+
+form .message.success {
+    color: #1cb495; 
+}
+form .message.success:before {
+    content: '✓ '; 
+}
+
+form .message.loading {
+    color: #ffffff;
+}
+
+form .message.failure {
+    color: #ff2361;
+}
+form .message.failure:before {
+    content: 'X '; 
+}
