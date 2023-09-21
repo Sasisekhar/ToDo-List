@@ -5,9 +5,31 @@ var app = express();
 app.set('view engine', 'ejs')
 
 var bodyParser = require("body-parser");
+const session = require('express-session');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(bodyParser.json());
+
+// Configure session management
+app.use(session({
+  secret: 'your-secret-key', // Change this to a secure secret
+  resave: false,
+  saveUninitialized: true
+}));
+
+// Middleware to initialize session data
+app.use(function(req, res, next) {
+  if (!req.session.task) {
+    req.session.task = [];
+  }
+  if (!req.session.complete) {
+    req.session.complete = [];
+  }
+  if (!req.session.saved) {
+    req.session.saved = [];
+  }
+  next();
+});
 
 const { MongoClient, ServerApiVersion } = require('mongodb')
 
@@ -24,40 +46,36 @@ const client = new MongoClient(uri, {
     }
 });
 
-var task = [];
-var complete = [];
-var saved = [];
-
 app.get('/', function (req, res) {
-  res.render('index', { task: task, complete: complete, saved: saved });
+  res.render('index', { task: req.session.task, complete: req.session.complete, saved: req.session.saved });
 });
 
 app.post('/addtask', function (req, res) {
 
     var newTask = req.body.newtask;
     
-    task.push(newTask);
+    req.session.task.push(newTask);
     
     res.redirect('/');
 });
 
 app.get("/completetask", function(req, res) {
     var taskId = req.query.index;
-    complete.push(task[taskId]);
-    task.splice(taskId, 1);
+    req.session.complete.push(req.session.task[taskId]);
+    req.session.task.splice(taskId, 1);
     res.redirect("/");
 });
 
 app.get("/removetask", function(req, res) {
     var taskId = req.query.index;
-    task.splice(taskId, 1);
+    req.session.task.splice(taskId, 1);
     res.redirect("/");
 });
 
 app.get("/reverttask", function(req, res) {
     var taskId = req.query.index;
-    task.push(complete[taskId]);
-    complete.splice(taskId, 1);
+    req.session.task.push(req.session.complete[taskId]);
+    req.session.complete.splice(taskId, 1);
     res.redirect("/");
 });
 
@@ -71,10 +89,10 @@ app.post('/saveas', function (req, res) {
 
         if(record == null) {
           console.log("Record doesn't exist");
-          record = await client.db(_DB).collection(_Collection).insertOne({name:req.body.name, incomplete:task, complete:complete});
+          record = await client.db(_DB).collection(_Collection).insertOne({name:req.body.name, incomplete:req.session.task, complete:req.session.complete});
         } else {
           console.log("Record exists!");
-          record = await client.db(_DB).collection(_Collection).updateOne({name:req.body.name}, {$set: {incomplete:task, complete:complete}});
+          record = await client.db(_DB).collection(_Collection).updateOne({name:req.body.name}, {$set: {incomplete:req.session.task, complete:req.session.complete}});
         }
         
         client.close();
@@ -88,7 +106,7 @@ app.post('/saveas', function (req, res) {
 
 app.get('/load', function (req, res) {
   var taskId = req.query.index;
-  var taskName = saved[taskId];
+  var taskName = req.session.saved[taskId];
 
     async function run() {
         // Connect the client to the server	(optional starting in v4.7)
@@ -102,8 +120,8 @@ app.get('/load', function (req, res) {
           res.end();
         } else {
           console.log("Record exists!");
-          task = record.incomplete;
-          complete = record.complete;
+          req.session.task = record.incomplete;
+          req.session.complete = record.complete;
         }
 
         client.close();
@@ -115,13 +133,13 @@ app.get('/load', function (req, res) {
 
 app.get('/save', function (req, res) {
   var taskId = req.query.index;
-  var taskName = saved[taskId];
+  var taskName = req.session.saved[taskId];
 
     async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
 
-        var record = await client.db(_DB).collection(_Collection).updateOne({name:taskName}, {$set: {incomplete:task, complete:complete}});
+        var record = await client.db(_DB).collection(_Collection).updateOne({name:taskName}, {$set: {incomplete:req.session.task, complete:req.session.complete}});
 
         client.close();
 
@@ -132,7 +150,7 @@ app.get('/save', function (req, res) {
 
 app.get('/delete', function (req, res) {
   var taskId = req.query.index;
-  var taskName = saved[taskId];
+  var taskName = req.session.saved[taskId];
 
     async function run() {
         // Connect the client to the server	(optional starting in v4.7)
@@ -161,7 +179,7 @@ app.post('/list', function (req, res) {
         tempArr.push(i.name);
       }
 
-      saved = tempArr;
+      req.session.saved = tempArr;
 
       client.close();
 
