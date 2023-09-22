@@ -92,14 +92,12 @@ app.post('/saveas', function (req, res) {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
   
-        var record = await client.db(_DB).collection(_Collection).findOne({name:req.body.name}, {projection: {_id:1}});
+        var record = await client.db(_DB).collection(_Collection).findOne({name:req.body.name.trim()}, {projection: {_id:1}});
 
         if(record == null) {
-          console.log("Record doesn't exist");
-          record = await client.db(_DB).collection(_Collection).insertOne({name:req.body.name, incomplete:req.session.task, complete:req.session.complete});
+          record = await client.db(_DB).collection(_Collection).insertOne({name:req.body.name.trim(), incomplete:req.session.task, complete:req.session.complete});
         } else {
-          console.log("Record exists!");
-          record = await client.db(_DB).collection(_Collection).updateOne({name:req.body.name}, {$set: {incomplete:req.session.task, complete:req.session.complete}});
+          record = await client.db(_DB).collection(_Collection).updateOne({name:req.body.name.trim()}, {$set: {incomplete:req.session.task, complete:req.session.complete}});
         }
         
         client.close();
@@ -116,10 +114,10 @@ app.get('/load', function (req, res) {
   var taskName;
   if(!isNaN(taskId)){
     taskName = req.session.saved[taskId];
-    req.session.currentList = taskName;
+    req.session.currentList = taskName.trim();
   } else {
     taskName = taskId;
-    req.session.currentList = taskName;
+    req.session.currentList = taskName.trim();
   }
 
     async function run() {
@@ -129,11 +127,9 @@ app.get('/load', function (req, res) {
         var record = await client.db(_DB).collection(_Collection).findOne({name:taskName}, {projection: {incomplete:1, complete:1}});
 
         if(record === null) {
-          console.log("Record doesn't exist");
           res.status(404);
           res.end();
         } else {
-          console.log("Record exists!");
           req.session.task = record.incomplete;
           req.session.complete = record.complete;
           res.redirect("/");
@@ -186,7 +182,7 @@ app.post('/list', function (req, res) {
 });
 
 app.post('/nameEdit', function (req, res) {
-  req.session.currentList = req.body.name;
+  req.session.currentList = req.body.name.trim();
   res.redirect("/");
 });
 
