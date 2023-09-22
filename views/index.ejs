@@ -2,12 +2,43 @@
 <head>
     <title> ToDo </title>
     <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
-    <link href="/styles.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body>
     <div class="container">
-        <h2>To Do</h2>
+            <h1 id="Title">
+                <span id="currentList"> <%= currentList %> </span>
+                <button onclick="edit()" class="button_title">
+                    <span class="material-symbols-outlined">edit</span>
+                </button>
+                <a href="/load?index=<%= currentList %>" class="load_title">
+                    <span class="material-symbols-outlined">file_open</span>
+                </a>
+                <button onclick="saveas()" class="button_title" id="saveas">
+                    <span class="material-symbols-outlined">save</span>
+                </button>
+            </h1>
+            <div class="hamburger-menu">
+                <input id="menu__toggle" type="checkbox"/>
+                <label class="menu__btn" for="menu__toggle">
+                    <span></span>
+                </label>
+            
+                <ul class="menu__box" class="todoList">
+                    <button onclick="refreshList()" class="button" id="refreshButton">Refresh List</button>
+                    <% for( var i = 0; i < saved.length; i++){ %>
+                        <li class="listItem">
+                            <span class="listItemName"> <%= saved[i] %> </span>
+                            <a href="/load?index=<%= i %>" class="load">
+                                <span class="material-symbols-outlined">file_open</span>
+                            <a href="/delete?index=<%= i %>" class="delete">
+                                <span class="material-symbols-outlined">delete</span>
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
         <div class="textBoxContainer">
             <form action="/" method="post" autocomplete="off">
                 <input class="textBox" type="text" name="newtask" placeholder="add new task">
@@ -45,34 +76,7 @@
                 </ul>
             </div>
         </div>
-        <div>
-            <form id="saveForm" action="/" autocomplete="off">
-                <div>
-                    <input id="saveName" class="textBox" type="text" name="saveName" placeholder="List Name">
-                    <button class="button" id="saveas" type=submit>Save As</button>
-                </div>
-                <div>
-                    <button class="button" id="list" type=submit>Refresh List</button>
-                    <ul class="todoList">
-                        <% for( var i = 0; i < saved.length; i++){ %>
-                            <li class="listItem">
-                                <span class="listItemName"> <%= saved[i] %> </span>
-                                <a href="/load?index=<%= i %>" class="load">
-                                    <span class="material-symbols-outlined">file_open</span>
-                                </a>
-                                <a href="/save?index=<%= i %>" class="save">
-                                    <span class="material-symbols-outlined">save</span>
-                                </a>
-                                <a href="/delete?index=<%= i %>" class="delete">
-                                    <span class="material-symbols-outlined">delete</span>
-                                </a>
-                            </li>
-                        <% } %>
-                    </ul>
-                </div>
-            </form>
-        </div>
     </div>
-    <script src="view.js"></script>
+    <script src="js/view.js"></script>
 </body>
 </html>

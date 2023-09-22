@@ -28,6 +28,9 @@ app.use(function(req, res, next) {
   if (!req.session.saved) {
     req.session.saved = [];
   }
+  if (!req.session.currentList) {
+    req.session.currentList = "Untitled List";
+  }
   next();
 });
 
@@ -47,7 +50,11 @@ const client = new MongoClient(uri, {
 });
 
 app.get('/', function (req, res) {
-  res.render('index', { task: req.session.task, complete: req.session.complete, saved: req.session.saved });
+  res.render('index', { task: req.session.task, 
+                        complete: req.session.complete, 
+                        saved: req.session.saved,
+                        currentList: req.session.currentList
+                      });
 });
 
 app.post('/addtask', function (req, res) {
@@ -106,7 +113,14 @@ app.post('/saveas', function (req, res) {
 
 app.get('/load', function (req, res) {
   var taskId = req.query.index;
-  var taskName = req.session.saved[taskId];
+  var taskName;
+  if(!isNaN(taskId)){
+    taskName = req.session.saved[taskId];
+    req.session.currentList = taskName;
+  } else {
+    taskName = taskId;
+    req.session.currentList = taskName;
+  }
 
     async function run() {
         // Connect the client to the server	(optional starting in v4.7)
@@ -114,7 +128,7 @@ app.get('/load', function (req, res) {
   
         var record = await client.db(_DB).collection(_Collection).findOne({name:taskName}, {projection: {incomplete:1, complete:1}});
 
-        if(record == null) {
+        if(record === null) {
           console.log("Record doesn't exist");
           res.status(404);
           res.end();
@@ -122,28 +136,11 @@ app.get('/load', function (req, res) {
           console.log("Record exists!");
           req.session.task = record.incomplete;
           req.session.complete = record.complete;
+          res.redirect("/");
         }
 
         client.close();
 
-        res.redirect("/");
-      }
-      run();
-});
-
-app.get('/save', function (req, res) {
-  var taskId = req.query.index;
-  var taskName = req.session.saved[taskId];
-
-    async function run() {
-        // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
-
-        var record = await client.db(_DB).collection(_Collection).updateOne({name:taskName}, {$set: {incomplete:req.session.task, complete:req.session.complete}});
-
-        client.close();
-
-        res.redirect("/");
       }
       run();
 });
@@ -186,6 +183,16 @@ app.post('/list', function (req, res) {
       res.redirect("/");
     }
     run();
+});
+
+app.post('/nameEdit', function (req, res) {
+  req.session.currentList = req.body.name;
+  res.redirect("/");
+});
+
+//The 404 Route (ALWAYS Keep this as the last route)
+app.get('*', function(req, res){
+  res.send('<html><body><h1>ERROR</h1></body></html>', 404);
 });
 
 //the server is listening on port 3000 for connections
